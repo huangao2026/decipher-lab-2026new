@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>全球古文字符号AI破译实验室</title>
+<style>
+body{max-width:700px;margin:30px auto;padding:0 20px;background:#0f172a;color:#e2e8f0;font-family:system-ui}
+h1{text-align:center;color:#38bdf8}
+.sub{text-align:center;color:#94a3b8;margin:10px 0 30px}
+.upload{border:2px dashed #38bdf8;border-radius:16px;padding:45px 20px;text-align:center;cursor:pointer}
+#result{background:#1e293b;border-radius:16px;padding:25px;margin-top:25px;min-height:180px;white-space:pre-wrap;line-height:1.6}
+button{background:#38bdf8;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;margin-top:16px;cursor:pointer}
+button:disabled{background:#64748b}
+</style>
+
+<h1>🔍 全球古文字符号AI破译实验室</h1>
+<p class="sub">上传任何古代文字/符号 → AI自动识别、破译、溯源</p>
+<p class="sub" style="font-size:14px">免费试用｜每日限量｜密钥安全｜不超额度</p>
+
+<div class="upload" onclick="document.getElementById('file').click()">
+  <p>点击上传全球古文字 / 符号 / 图腾图片</p>
+  <input type="file" id="file" accept="image/*" hidden>
+  <button id="go">开始 AI 破译</button>
+</div>
+
+<div id="result">等待上传古代文字或符号图片...</div>
+
+<script>
+const file = document.getElementById('file')
+const btn = document.getElementById('go')
+const res = document.getElementById('result')
+
+btn.onclick = async () => {
+  if(!file.files[0]){alert('请选择图片'); return}
+  btn.disabled=1; res.innerText="🧠 AI正在分析古代文字符号，请稍候..."
+  const fd = new FormData(); fd.append('image', file.files[0])
+  try{
+    const resp = await fetch('/api/decipher',{method:'POST',body:fd})
+    const data = await resp.json()
+    res.innerText = data.result
+  }catch(e){res.innerText="服务繁忙，请稍后再试"}
+  btn.disabled=0
+}
+</script>
