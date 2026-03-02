@@ -1,43 +1,314 @@
 <!DOCTYPE html>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>全球古文字符号AI破译实验室</title>
-<style>
-body{max-width:700px;margin:30px auto;padding:0 20px;background:#0f172a;color:#e2e8f0;font-family:system-ui}
-h1{text-align:center;color:#38bdf8}
-.sub{text-align:center;color:#94a3b8;margin:10px 0 30px}
-.upload{border:2px dashed #38bdf8;border-radius:16px;padding:45px 20px;text-align:center;cursor:pointer}
-#result{background:#1e293b;border-radius:16px;padding:25px;margin-top:25px;min-height:180px;white-space:pre-wrap;line-height:1.6}
-button{background:#38bdf8;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:16px;margin-top:16px;cursor:pointer}
-button:disabled{background:#64748b}
-</style>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>全球古文字AI破译实验室</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "PingFang SC", sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #38bdf8, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        .upload-area {
+            border: 2px dashed #475569;
+            border-radius: 12px;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+        }
+        .upload-icon {
+            font-size: 4rem;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+        .upload-text {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+        .upload-hint {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+        #file-input {
+            display: none;
+        }
+        .btn {
+            background: linear-gradient(90deg, #38bdf8, #2563eb);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.4);
+        }
+        .btn:disabled {
+            background: #64748b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .result-area {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            display: none;
+        }
+        .result-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #38bdf8;
+        }
+        .result-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            color: #e2e8f0;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(56, 189, 248, 0.2);
+            border-top: 4px solid #38bdf8;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            margin: 20px auto;
+            border-radius: 8px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .container {
+                padding: 20px;
+            }
+            .upload-area {
+                padding: 40px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>全球古文字AI破译实验室</h1>
+            <p class="subtitle">上传古文字图片，AI 一键破译（甲骨文/金文/小篆/楔形文字/象形文字）</p>
+        </header>
 
-<h1>🔍 全球古文字符号AI破译实验室</h1>
-<p class="sub">上传任何古代文字/符号 → AI自动识别、破译、溯源</p>
-<p class="sub" style="font-size:14px">免费试用｜每日限量｜密钥安全｜不超额度</p>
+        <div class="upload-area" id="upload-area">
+            <div class="upload-icon">📤</div>
+            <p class="upload-text">点击或拖拽上传古文字图片</p>
+            <p class="upload-hint">支持 JPG、PNG、WEBP 格式，单张不超过 10MB</p>
+            <input type="file" id="file-input" accept="image/*">
+        </div>
 
-<div class="upload" onclick="document.getElementById('file').click()">
-  <p>点击上传全球古文字 / 符号 / 图腾图片</p>
-  <input type="file" id="file" accept="image/*" hidden>
-  <button id="go">开始 AI 破译</button>
-</div>
+        <div style="text-align: center;">
+            <button class="btn" id="decipher-btn" disabled>开始 AI 破译</button>
+            <button class="btn" id="reset-btn">重置</button>
+        </div>
 
-<div id="result">等待上传古代文字或符号图片...</div>
+        <img id="preview-img" class="preview-image" alt="预览图片">
 
-<script>
-const file = document.getElementById('file')
-const btn = document.getElementById('go')
-const res = document.getElementById('result')
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>AI 正在解析古文字，请稍候...</p>
+        </div>
 
-btn.onclick = async () => {
-  if(!file.files[0]){alert('请选择图片'); return}
-  btn.disabled=1; res.innerText="🧠 AI正在分析古代文字符号，请稍候..."
-  const fd = new FormData(); fd.append('image', file.files[0])
-  try{
-    const resp = await fetch('/api/decipher',{method:'POST',body:fd})
-    const data = await resp.json()
-    res.innerText = data.result
-  }catch(e){res.innerText="服务繁忙，请稍后再试"}
-  btn.disabled=0
-}
-</script>
+        <div class="result-area" id="result-area">
+            <h2 class="result-title">破译结果</h2>
+            <div class="result-content" id="result-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const decipherBtn = document.getElementById('decipher-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const previewImg = document.getElementById('preview-img');
+        const loading = document.getElementById('loading');
+        const resultArea = document.getElementById('result-area');
+        const resultContent = document.getElementById('result-content');
+        
+        let selectedFile = null;
+
+        // 上传区域点击触发文件选择
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // 拖拽上传
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#38bdf8';
+            uploadArea.style.background = 'rgba(56, 189, 248, 0.1)';
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.style.borderColor = '#475569';
+            uploadArea.style.background = 'transparent';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#475569';
+            uploadArea.style.background = 'transparent';
+            
+            if (e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        // 文件选择处理
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+
+        // 处理选中的文件
+        function handleFile(file) {
+            // 验证文件类型
+            if (!file.type.startsWith('image/')) {
+                alert('请上传图片文件！');
+                return;
+            }
+
+            // 验证文件大小
+            if (file.size > 10 * 1024 * 1024) {
+                alert('文件大小不能超过 10MB！');
+                return;
+            }
+
+            selectedFile = file;
+            decipherBtn.disabled = false;
+
+            // 显示预览图片
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 破译按钮点击事件
+        decipherBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            // 显示加载状态
+            loading.style.display = 'block';
+            decipherBtn.disabled = true;
+            resultArea.style.display = 'none';
+
+            try {
+                // 创建FormData
+                const fd = new FormData();
+                fd.append('image', selectedFile);
+                
+                // 调用API（关键修改：api → API）
+                const response = await fetch('/API/decipher', {
+                    method: 'POST',
+                    body: fd
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP 错误！状态码：${response.status}`);
+                }
+
+                const result = await response.json();
+
+                // 显示结果
+                loading.style.display = 'none';
+                resultArea.style.display = 'block';
+                
+                if (result.code === 200) {
+                    resultContent.textContent = result.data.text;
+                } else {
+                    resultContent.textContent = `解析失败：${result.message}`;
+                }
+
+            } catch (error) {
+                loading.style.display = 'none';
+                resultArea.style.display = 'block';
+                resultContent.textContent = `请求失败：${error.message}`;
+                decipherBtn.disabled = false;
+            }
+        });
+
+        // 重置按钮点击事件
+        resetBtn.addEventListener('click', () => {
+            selectedFile = null;
+            fileInput.value = '';
+            decipherBtn.disabled = true;
+            
+            previewImg.style.display = 'none';
+            loading.style.display = 'none';
+            resultArea.style.display = 'none';
+            resultContent.textContent = '';
+        });
+    </script>
+</body>
+</html>
